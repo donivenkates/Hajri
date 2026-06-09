@@ -47,4 +47,48 @@ GROUP BY C.ClientId, P.Name,CAST(P.CreatedOn AS DATE),P.Amount,P.Advance;
 }
 });
 
+router.get("/getEmpPayments", async (req,res) => {
+    try{
+        const {RegId} = req.query
+        const pool = await poolPromise;
+        const result = await pool.request()
+        .input("RegId",sql.Int, RegId).query(`
+        select REG.Name,CONVERT(Varchar(20),Ep.Dateoftrasaction,23) as Date,EP.Amount,PaymentType,Notes from [dbo].[EmpPayments] as EP
+        INNER JOIN dbo.Registrations REG ON REG.Id = EP.RegId Where EP.RegId = @RegId
+            `);
+        res.status(200).json({
+            status: true,
+            data: result.recordset})
+        } catch (error){
+            res.status(500).json({
+                status: false,
+                message: error.message
+            });
+        }
+ });
+
+router.get("/getEmpAtterdanceReport", async (req,res) => {
+    try{
+        const {RegId} = req.query
+        const pool = await poolPromise;
+        const result = await pool.request()
+        .input("RegId",sql.Int, RegId).query(`
+            Select P.Name as Project,Reg.Name as Employee, RegId,CONVERT(Varchar(20),DateofTrasaction, 23) as date,Attendance
+from dbo.EmpAttendance as att
+INNER JOIN dbo.Registrations REG ON REG.Id = att.RegId
+INNER JOIN dbo.Project p ON p.Id = att.ProjectId
+Where att.RegId = @RegId
+            `);
+            res.status(200).json({
+                status: true,
+                date: result.recordset})
+            } catch (error) {
+                res.status(500).json({
+                    status: false,
+                    message: error.message
+                })
+            }
+        })
+
+
 module.exports = router;

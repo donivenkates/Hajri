@@ -490,6 +490,25 @@ where EP.RegId = @RegId
     }
 });
 
+router.post("/DeleteEmployee", async (req,res) => {
+    try{
+        const {Id} = req.query
+        const pool = await poolPromise;
+        const result = await pool.request()
+        .input("Id",sql.Int,Id).query(`
+            Update dbo.Registrations set IsActive = 0 Where Id = @Id
+            `);
+            res.status(201).json({
+                stataus: true,
+                message: "Employee Delated Successfully"
+            });
+        } catch (error){
+        res.status(500).json({
+            status: false,
+            message: error.message,
+        });
+        }
+});
 
 
 module.exports = router;
