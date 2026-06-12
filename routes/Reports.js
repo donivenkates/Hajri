@@ -67,17 +67,23 @@ router.get("/getEmpPayments", async (req,res) => {
         }
  });
 
+
 router.get("/getEmpAtterdanceReport", async (req,res) => {
     try{
-        const {RegId} = req.query
+        const {RegId,ProjectId,FromDate,ToDate,SuperId} = req.query
         const pool = await poolPromise;
         const result = await pool.request()
-        .input("RegId",sql.Int, RegId).query(`
+        .input("RegId",sql.Int, RegId)
+        .input(ProjectId,sql.Int,ProjectId)
+        .input(SuperId,sql.Int,SuperId)
+        input(FromDate,sql.Date,FromDate)
+        .input(ToDate,sql.Date,ToDate).query(`
             Select P.Name as Project,Reg.Name as Employee, RegId,CONVERT(Varchar(20),DateofTrasaction, 23) as date,Attendance
 from dbo.EmpAttendance as att
 INNER JOIN dbo.Registrations REG ON REG.Id = att.RegId
 INNER JOIN dbo.Project p ON p.Id = att.ProjectId
-Where att.RegId = @RegId
+Where (att.RegId = @RegId OR @RegId = 0) and DateOftrasaction Between @FromDate and @ToDate
+and (att.ProjectId = @ProjectId OR @ProjectId = 0) and att.SuperId = @SuperId
             `);
             res.status(200).json({
                 status: true,
@@ -86,9 +92,8 @@ Where att.RegId = @RegId
                 res.status(500).json({
                     status: false,
                     message: error.message
-                })
+                });
             }
-        })
-
+        });
 
 module.exports = router;
