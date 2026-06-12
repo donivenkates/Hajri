@@ -499,7 +499,7 @@ router.post("/DeleteEmployee", async (req,res) => {
             Update dbo.Registrations set IsActive = 0 Where Id = @Id
             `);
             res.status(201).json({
-                stataus: true,
+                status: true,
                 message: "Employee Delated Successfully"
             });
         } catch (error){
@@ -526,7 +526,7 @@ Update [dbo].[Registrations] set Name = @Name, Mobile = @Mobile, Age = @Age, Amo
 Where Id = @RegId
           `);
           res.status(201).json({
-              statu : true,
+              status : true,
               message: "Employee Updated Successfully"
           });
         }catch(error){
