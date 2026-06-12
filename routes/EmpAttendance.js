@@ -511,4 +511,32 @@ router.post("/DeleteEmployee", async (req,res) => {
 });
 
 
+router.post("/UpadateEmployee", async (req,res) => {
+      try{
+        const {RegId,Name,Mobile,Age,Amount,UserId} = req.body;
+        const pool = await poolPromise;
+        const result = await pool.request()
+        .input("RegId",sql.Int, RegId)
+        .input("Name",sql.VarChar(200), Name)
+        .input("Mobile",sql.VarChar(20),Mobile)
+        .input("Age",sql.Int,Age)
+        .input("Amount",sql.Decimal(18,2),Amount)
+        .input("UserId",sql.Int,UserId).query(`
+Update [dbo].[Registrations] set Name = @Name, Mobile = @Mobile, Age = @Age, Amount = @Amount, UpdatedBy = @UserId, UpdatedOn = GetDate()
+Where Id = @RegId
+          `);
+          res.status(201).json({
+              statu : true,
+              message: "Employee Updated Successfully"
+          });
+        }catch(error){
+          res.status(500).json({
+            status: false,
+            message: error.message
+          });
+        }
+});
+
+
+
 module.exports = router;
