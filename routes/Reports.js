@@ -76,7 +76,7 @@ router.get("/getEmpAtterdanceReport", async (req,res) => {
         .input("RegId",sql.Int, RegId)
         .input(ProjectId,sql.Int,ProjectId)
         .input(SuperId,sql.Int,SuperId)
-        input(FromDate,sql.Date,FromDate)
+        .input(FromDate,sql.Date,FromDate)
         .input(ToDate,sql.Date,ToDate).query(`
             Select P.Name as Project,Reg.Name as Employee, RegId,CONVERT(Varchar(20),DateofTrasaction, 23) as date,Attendance
 from dbo.EmpAttendance as att
