@@ -539,4 +539,66 @@ Where Id = @RegId
 
 
 
+  router.get("/GetResignEmployees", async (req,res) => {
+    try {
+    const {SuperId} = req.query;
+    const pool = await poolPromise;   
+    const result = await pool.request()
+    .input("SuperId", sql.Int, SuperId).query(`
+      Select SuperId,Name,Mobile,Age,Amount from dbo.Registrations where SuperId = @SuperId and Isactive = 0
+    `)
+     res.status(200).json({
+      status:true,
+      data: result.recordset
+     })
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        status: false,
+        message: error.message
+      });
+    }
+});
+
+router.post("/RejoinEmployee", async (req,res) => {
+    try{
+        const {Id} = req.body
+        const pool = await poolPromise;
+        const result = await pool.request()
+        .input("Id",sql.Int,Id).query(`
+            Update dbo.Registrations set IsActive = 1 Where Id = @Id
+            `);
+            res.status(201).json({
+                stataus: true,
+                message: "Employee Delated Successfully"
+            });
+        } catch (error){
+        res.status(500).json({
+            status: false,
+            message: error.message,
+        });
+        }
+});
+
+router.post("/DeleteEmpPayment", async (req,res) => {
+    try{
+        const {Id} = req.body
+        const pool = await poolPromise;
+        const result = await pool.request()
+        .input("Id",sql.Int,Id).query(`
+           Update dbo.EmpPayments Set IsActive = 0 Where Id = @Id
+            `);
+            res.status(201).json({
+                stataus: true,
+                message: "EmpPayment Delated Successfully"
+            });
+        } catch (error){
+        res.status(500).json({
+            status: false,
+            message: error.message,
+        });
+        }
+});
+
+
 module.exports = router;
